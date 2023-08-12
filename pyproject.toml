@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "py-web-hw-4"
+version = "1.0"
+description = "homework 4 python web"
+authors = ["Ihor Siedielnikov <sisemail92@gmail.com>"]
+readme = "README.md"
+packages = [{include = "py_web_hw_4"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+aiosqlite = "^0.19.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
