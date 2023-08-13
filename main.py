@@ -7,8 +7,8 @@ import urllib.parse
 import pathlib
 import mimetypes
 import socket
-import threading
 import json
+import os
 
 
 class HttpHandler(BaseHTTPRequestHandler):
@@ -65,17 +65,25 @@ class HttpHandler(BaseHTTPRequestHandler):
                 except ConnectionRefusedError:
                     sleep(0.5)
                     
-    def save_data_to_json(self, data):
-        json_file = pathlib.Path() / 'storage' / 'data.json'
-        date = str(datetime.now()).split('.')[0]
+    def save_data_to_json(data):
+        json_file_path = os.path.join('storage', 'data.json')
+        date = str(datetime.now())
         
-        with open(json_file, 'r+') as f:
-            data_json = json.load(f)
-            data_json[date] = data
-            f.seek(0)
-            json.dump(data_json, f, indent=4)
-            f.truncate()
-       
+        if not os.path.exists('storage'):
+            os.makedirs('storage')
+        
+        try:
+            with open(json_file_path, 'r+') as f:
+                data_json = json.load(f)
+                data_json[date] = data
+                f.seek(0)
+                json.dump(data_json, f, indent=4)
+                f.truncate()
+        except FileNotFoundError:
+            with open(json_file_path, 'w+') as f:
+                data_json = {date: data}
+                json.dump(data_json, f, indent=4)
+                f.truncate()
 
 
 def echo_server():
@@ -114,6 +122,7 @@ def run(server_class=HTTPServer, handler_class=HttpHandler):
     server_address = ('', 3000)
     
     http = server_class(server_address, handler_class)
+    
     try:
         socket_server = Thread(target=echo_server)
         print('Sockt server start')
